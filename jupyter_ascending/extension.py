@@ -1,5 +1,7 @@
+import logging
 import time
 
+from jupyter_server.serverapp import ServerApp
 from loguru import logger
 
 import jupyter_ascending.handlers.server_extension
@@ -40,3 +42,14 @@ def load_jupyter_server_extension(ipython):
     logger.info("SERVER LOAD: " + time.ctime())
 
     jupyter_ascending.handlers.server_extension.load_extension(ipython)
+
+def _load_jupyter_server_extension(nb_server_app: ServerApp):
+    """This is the specially named function that Jupyter will call to load a server extension."""
+    setup_logger()
+
+    # ServerApp uses the "tornado" logger.
+    serverapp_logger = logging.getLogger("tornado")
+    serverapp_logger.info("LOADING JUPYTER7 ASCENDING SERVER PLUGIN")
+    logger.info("SERVER LOAD: " + time.ctime())
+
+    jupyter_ascending.handlers.server_extension.load_extension(nb_server_app)

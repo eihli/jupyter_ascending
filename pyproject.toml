@@ -15,7 +15,7 @@ editdistance = "^0.6.2"
 requests = "^2.31.0"
 aiohttp = "^3.8.4"
 # will not work w version 7
-notebook= "^6.5.1"
+notebook = "^7"
 
 [tool.poetry.dev-dependencies]
 python-language-server = {extras = ["all"], version = "^0.31.9"}

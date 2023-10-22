@@ -5,7 +5,8 @@ import urllib.request
 from contextlib import closing
 
 import ipykernel  # type: ignore
-from notebook import notebookapp  # type: ignore
+from notebook import app  # type: ignore
+from jupyter_server.serverapp import list_running_servers
 
 
 def get_name_from_python():
@@ -19,7 +20,7 @@ def get_name_from_python():
     connection_file = os.path.basename(ipykernel.get_connection_file())
     kernel_id = connection_file.split("-", 1)[1].split(".")[0]
 
-    for srv in notebookapp.list_running_servers():
+    for srv in list_running_servers():
         try:
             if srv["token"] == "" and not srv["password"]:  # No token and no password, ahem...
                 req = urllib.request.urlopen(srv["url"] + "api/sessions")

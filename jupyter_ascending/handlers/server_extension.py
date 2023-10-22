@@ -13,8 +13,10 @@ from jsonrpcserver import Error
 from jsonrpcserver import Result
 from jsonrpcserver import Success
 from loguru import logger
+from jupyter_server.base.handlers import JupyterHandler
 from notebook.base.handlers import IPythonHandler  # type: ignore
 from notebook.utils import url_path_join  # type: ignore
+import tornado
 
 from jupyter_ascending._environment import SYNC_EXTENSION
 from jupyter_ascending.errors import UnableToFindNotebookException
@@ -30,6 +32,25 @@ def _clear_registered_servers():
 
 
 class JupyterAscendingHandler(IPythonHandler):
+    async def post(self) -> None:
+        """We receive commands as HTTP POST requests.
+
+        NOTE: authentication is disabled on this endpoint!!!
+
+        It is critical that this doesn't block the main server thread,
+        or you'll get a deadlock in the notebook kernel thread as it processes
+        this request. Thus the usage of `asyncio`.
+        """
+        request = self.request.body.decode()
+        response = await dispatch(request)
+        logger.info("Got Response:\n\t\t{}", response)
+        self.write(str(response))
+
+    def check_xsrf_cookie(self):
+        """Disable XSRF cookie checking on this request type"""
+
+class Jupyter7AscendingHandler(JupyterHandler):
+    @tornado.web.authenticated
     async def post(self) -> None:
         """We receive commands as HTTP POST requests.
 
